@@ -74,32 +74,32 @@ const FEEDS = {
 americas: [
 {
 name: 'Reuters Americas',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets"+OR+"market+wrap")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets"+OR+"market+wrap"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 1
 },
 {
 name: 'Bloomberg Americas',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 1
 },
 {
 name: 'CNBC Markets',
-url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 2
 },
 {
 name: 'MarketWatch Markets',
-url: 'https://news.google.com/rss/search?q=site:marketwatch.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:marketwatch.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 2
 },
 {
 name: 'Yahoo Finance Americas',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 3
 },
 {
 name: 'Investing Americas',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street")+when:2d&hl=en-US&gl=US&ceid=US:en',
+url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
 tier: 3
 }
 ],
@@ -107,27 +107,27 @@ tier: 3
 europe: [
 {
 name: 'Reuters Europe',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
+url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
 tier: 1
 },
 {
 name: 'Bloomberg Europe',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
+url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
 tier: 1
 },
 {
 name: 'CNBC Europe',
-url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
+url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
 tier: 2
 },
 {
 name: 'Yahoo Finance Europe',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
+url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
 tier: 3
 },
 {
 name: 'Investing Europe',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
+url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
 tier: 3
 }
 ],
@@ -163,37 +163,37 @@ tier: 3
 asia: [
 {
 name: 'Reuters Asia',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
+url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
 tier: 1
 },
 {
 name: 'Bloomberg Asia',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
+url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
 tier: 1
 },
 {
 name: 'Nikkei Asia',
-url: 'https://news.google.com/rss/search?q=site:asia.nikkei.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
+url: 'https://news.google.com/rss/search?q=site:asia.nikkei.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nikkei+225"+OR+TOPIX)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
 tier: 2
 },
 {
 name: 'Economic Times Markets',
-url: 'https://news.google.com/rss/search?q=site:economictimes.indiatimes.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+nifty+OR+sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
+url: 'https://news.google.com/rss/search?q=site:economictimes.indiatimes.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nifty+50"+OR+Sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
 tier: 2
 },
 {
 name: 'Mint Markets',
-url: 'https://news.google.com/rss/search?q=site:livemint.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+nifty+OR+sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
+url: 'https://news.google.com/rss/search?q=site:livemint.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nifty+50"+OR+Sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
 tier: 2
 },
 {
 name: 'Yahoo Finance Asia',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
+url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
 tier: 3
 },
 {
 name: 'Investing Asia',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
+url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
 tier: 3
 }
 ]
@@ -264,6 +264,17 @@ const RELEVANT_KEYWORDS = [
 'ftse',
 'cac',
 'stoxx',
+'stoxx 600',
+'euro stoxx',
+'euro stoxx 50',
+'shanghai composite',
+'csi 300',
+'ftse mib',
+'ibex',
+'aex',
+'asx 200',
+'tsx',
+'bovespa',
 
 'yield',
 'yields',
@@ -481,7 +492,7 @@ content.includes('energy')
 score += 10;
 }
 
-// Major index mentions
+// Major index mentions (Priority 2 & 4)
 
 const majorIndices = [
 's&p',
@@ -494,7 +505,19 @@ const majorIndices = [
 'sensex',
 'dax',
 'ftse',
-'cac'
+'cac',
+'topix',
+'stoxx 600',
+'euro stoxx',
+'euro stoxx 50',
+'shanghai composite',
+'csi 300',
+'ftse mib',
+'ibex',
+'aex',
+'asx 200',
+'tsx',
+'bovespa'
 ];
 
 if (
@@ -502,7 +525,44 @@ majorIndices.some(index =>
 content.includes(index)
 )
 ) {
-score += 10;
+score += 25;
+}
+
+// Reward multiple index mentions (Priority 3)
+const indexCount = majorIndices.filter(index =>
+content.includes(index)
+).length;
+
+score += indexCount * 8;
+
+// Dedicated Index Boost (Priority 5)
+const indexKeywords = [
+  's&p',
+  'nasdaq',
+  'dow',
+  'russell 2000',
+  'vix',
+  'dax',
+  'ftse',
+  'cac',
+  'stoxx',
+  'nikkei',
+  'topix',
+  'hang seng',
+  'kospi',
+  'shanghai',
+  'csi 300',
+  'nifty',
+  'sensex',
+  'asx'
+];
+
+if (
+  indexKeywords.some(index =>
+    content.includes(index)
+  )
+) {
+  score += 25;
 }
 
 // Boost for core market terms in title

@@ -1,0 +1,19 @@
+{
+  "name": "market-feed-backend",
+  "version": "1.0.0",
+  "description": "Backend API for aggregating market RSS feeds and extracting clean article content",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "google-news-url-decoder": "^1.2.1",
+    "jsdom": "^24.0.0",
+    "rss-parser": "^3.13.0"
+  }
+}

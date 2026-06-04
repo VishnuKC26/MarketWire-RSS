@@ -688,8 +688,14 @@ async function fetchRegionFeeds(region) {
     return true;
   });
 
+  // Filter out articles older than 2 days
+  const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
+  const recentArticles = uniqueArticles.filter(article => {
+    return (Date.now() - article.isoDate) <= twoDaysMs;
+  });
+
   // Apply relevance filter
-  const relevantArticles = uniqueArticles.filter(isRelevant);
+  const relevantArticles = recentArticles.filter(isRelevant);
 
   // Score articles
   const scoredArticles = relevantArticles.map(article => ({

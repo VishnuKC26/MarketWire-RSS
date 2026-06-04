@@ -48,6 +48,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [googleClientId, setGoogleClientId] = useState(null);
 
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('market_pulse_user');
@@ -162,24 +163,65 @@ export default function App() {
     }
   };
 
+  // Fetch client config (including Google Client ID) from backend
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/config' : '/api/config';
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        if (data.success && data.googleClientId) {
+          setGoogleClientId(data.googleClientId);
+        }
+      } catch (err) {
+        console.error('Failed to fetch config:', err);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   // Google identity services init
   useEffect(() => {
-    if (typeof window.google !== 'undefined' && !user) {
-      try {
-        window.google.accounts.id.initialize({
-          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "738465611181-xxxxxxxx.apps.googleusercontent.com",
-          callback: handleCredentialResponse
-        });
-        
-        window.google.accounts.id.renderButton(
-          document.getElementById("google-signin-button"),
-          { theme: "filled_blue", size: "large", width: 220 }
-        );
-      } catch (err) {
-        console.error('Google Identity button render error:', err);
+    let intervalId;
+    
+    const initGoogleAuth = () => {
+      if (typeof window.google !== 'undefined' && !user && googleClientId) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: handleCredentialResponse
+          });
+          
+          const buttonDiv = document.getElementById("google-signin-button");
+          if (buttonDiv) {
+            window.google.accounts.id.renderButton(
+              buttonDiv,
+              { theme: "filled_blue", size: "large", width: 220 }
+            );
+            if (intervalId) clearInterval(intervalId);
+          }
+        } catch (err) {
+          console.error('Google Identity button render error:', err);
+        }
       }
+    };
+
+    initGoogleAuth();
+
+    // If script isn't loaded yet, retry
+    if (typeof window.google === 'undefined' && !user && googleClientId) {
+      intervalId = setInterval(() => {
+        if (typeof window.google !== 'undefined') {
+          initGoogleAuth();
+          clearInterval(intervalId);
+        }
+      }, 500);
     }
-  }, [user]);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [user, googleClientId]);
 
   const toggleStar = async (article) => {
     let updatedStarred = {};

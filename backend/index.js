@@ -877,6 +877,14 @@ function writeUserSaved(userId, data) {
 // AUTH & PERSISTENCE ENDPOINTS
 // ----------------------------
 
+// Endpoint to retrieve client config (e.g. Google Client ID) dynamically
+app.get('/api/config', (req, res) => {
+  res.json({
+    success: true,
+    googleClientId: process.env.GOOGLE_CLIENT_ID
+  });
+});
+
 // Google Sign-In verification endpoint
 app.post('/api/auth/google', async (req, res) => {
   const { credential } = req.body;

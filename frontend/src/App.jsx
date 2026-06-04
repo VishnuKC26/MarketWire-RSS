@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon, Star } from 'lucide-react';
+import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon, Star, Menu } from 'lucide-react';
 import ScheduleTracker from './components/ScheduleTracker';
 import Feed from './components/Feed';
 
@@ -38,6 +38,12 @@ const REGION_COLORS = {
 
 export default function App() {
   const [activeRegion, setActiveRegion] = useState('americas'); // 'americas', 'europe', 'mideast', 'asia'
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const handleRegionSelect = (region) => {
+    setActiveRegion(region);
+    setIsMobileMenuOpen(false);
+  };
   const [newsData, setNewsData] = useState({
     americas: { regionName: 'AMERICAS', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
     europe: { regionName: 'EUROPE', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
@@ -367,6 +373,10 @@ export default function App() {
   }, [activeRegion, newsData, savedArticlesList]);
 
   const handleArticleClick = (article) => {
+    if (window.innerWidth <= 768) {
+      window.open(article.link, '_blank');
+      return;
+    }
     setSelectedArticle(article);
     
     const w = Math.floor(window.screen.availWidth / 2 - 10);
@@ -589,7 +599,10 @@ export default function App() {
       <div className="grid-texture"></div>
 
       {/* Sidebar Navigation */}
-      <aside className="sidebar">
+      {isMobileMenuOpen && (
+        <div className="sidebar-backdrop" onClick={() => setIsMobileMenuOpen(false)} />
+      )}
+      <aside className={`sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         
         {/* User Profile / Login Widget */}
         <div className="sidebar-profile-widget" style={{
@@ -666,7 +679,7 @@ export default function App() {
         <nav className="nav-menu">
           <button 
             className={`nav-item-btn ${activeRegion === 'americas' ? 'active' : ''}`}
-            onClick={() => setActiveRegion('americas')}
+            onClick={() => handleRegionSelect('americas')}
             style={getBtnStyle('americas')}
           >
             {getRegionIcon('americas')}
@@ -675,7 +688,7 @@ export default function App() {
           
           <button 
             className={`nav-item-btn ${activeRegion === 'europe' ? 'active' : ''}`}
-            onClick={() => setActiveRegion('europe')}
+            onClick={() => handleRegionSelect('europe')}
             style={getBtnStyle('europe')}
           >
             {getRegionIcon('europe')}
@@ -684,7 +697,7 @@ export default function App() {
           
           <button 
             className={`nav-item-btn ${activeRegion === 'mideast' ? 'active' : ''}`}
-            onClick={() => setActiveRegion('mideast')}
+            onClick={() => handleRegionSelect('mideast')}
             style={getBtnStyle('mideast')}
           >
             {getRegionIcon('mideast')}
@@ -693,7 +706,7 @@ export default function App() {
           
           <button 
             className={`nav-item-btn ${activeRegion === 'asia' ? 'active' : ''}`}
-            onClick={() => setActiveRegion('asia')}
+            onClick={() => handleRegionSelect('asia')}
             style={getBtnStyle('asia')}
           >
             {getRegionIcon('asia')}
@@ -702,7 +715,7 @@ export default function App() {
 
           <button 
             className={`nav-item-btn ${activeRegion === 'saved' ? 'active' : ''}`}
-            onClick={() => setActiveRegion('saved')}
+            onClick={() => handleRegionSelect('saved')}
             style={getBtnStyle('saved')}
           >
             {getRegionIcon('saved')}
@@ -807,6 +820,14 @@ export default function App() {
                 }}
               >
                 <RefreshCw size={14} className={isLoading ? 'loading-shimmer' : ''} style={{ animation: isLoading ? 'spin 1s linear infinite' : 'none' }} />
+              </button>
+
+              <button 
+                className="btn-icon mobile-menu-toggle" 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                title="Toggle Menu"
+              >
+                {isMobileMenuOpen ? <X size={14} /> : <Menu size={14} />}
               </button>
             </div>
           </header>

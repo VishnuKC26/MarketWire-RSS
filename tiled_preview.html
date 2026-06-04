@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tiled Workspace Preview</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      width: 100vw;
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .pane {
+      height: 100vh;
+      border: none;
+    }
+    .left-pane {
+      width: 50vw;
+      border-right: 4px solid #1e293b;
+    }
+    .right-pane {
+      width: 50vw;
+    }
+    .divider-label {
+      position: absolute;
+      left: 50%;
+      top: 15px;
+      transform: translateX(-50%);
+      background: #111827;
+      color: #3b82f6;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      z-index: 100;
+      letter-spacing: 0.8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="divider-label">Tiled Split Workspace</div>
+  <iframe class="pane left-pane" src="http://localhost:5173/?mode=dashboard"></iframe>
+  <iframe class="pane right-pane" src="mock_article.html"></iframe>
+</body>
+</html>

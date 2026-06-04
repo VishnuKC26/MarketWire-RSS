@@ -190,8 +190,14 @@ export default function App() {
   useEffect(() => {
     let intervalId;
     
+    const isGoogleLoaded = () => {
+      return typeof window.google !== 'undefined' && 
+             typeof window.google.accounts !== 'undefined' && 
+             typeof window.google.accounts.id !== 'undefined';
+    };
+
     const initGoogleAuth = () => {
-      if (typeof window.google !== 'undefined' && !user && googleClientId) {
+      if (isGoogleLoaded() && !user && googleClientId) {
         try {
           window.google.accounts.id.initialize({
             client_id: googleClientId,
@@ -215,13 +221,13 @@ export default function App() {
     initGoogleAuth();
 
     // If script isn't loaded yet, retry
-    if (typeof window.google === 'undefined' && !user && googleClientId) {
+    if (!isGoogleLoaded() && !user && googleClientId) {
       intervalId = setInterval(() => {
-        if (typeof window.google !== 'undefined') {
+        if (isGoogleLoaded()) {
           initGoogleAuth();
           clearInterval(intervalId);
         }
-      }, 500);
+      }, 300);
     }
 
     return () => {

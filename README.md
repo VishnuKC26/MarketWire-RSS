@@ -92,19 +92,60 @@ Then visit `http://localhost:3001`.
 
 ## 🐳 Docker
 
-Build and run the Docker image:
+Build the Docker image:
 ```bash
 docker build -t market-feed-dashboard .
-docker run -d -p 3001:3001 --name market-dashboard market-feed-dashboard
+```
+
+Run the Docker container, passing the required environment variables:
+```bash
+docker run -d -p 3001:3001 --name market-dashboard -e GOOGLE_CLIENT_ID="your-client-id.apps.googleusercontent.com" market-feed-dashboard
 ```
 Open `http://localhost:3001`.
 
 ---
 
+## 🔑 Authentication Configuration (Google OAuth)
+
+The dashboard supports Google Sign-In to sync starred and "read later" articles across devices.
+
+### Local Development Setup
+1. Copy `.env.example` to `.env` in the root folder and configure `GOOGLE_CLIENT_ID`.
+2. Copy `frontend/.env.example` to `frontend/.env` and configure `VITE_GOOGLE_CLIENT_ID`.
+3. In your Google Cloud Console, under **Authorized JavaScript origins**, make sure to add:
+   - `http://localhost:5173` (Vite dev server)
+   - `http://localhost:3001` (production build server)
+
+### Production Setup
+1. In your hosting platform (e.g., Render, Heroku), define the environment variable:
+   - **Key**: `GOOGLE_CLIENT_ID`
+   - **Value**: Your Google Client ID
+2. In Google Cloud Console, add your production domain (e.g., `https://your-app-name.onrender.com`) to the **Authorized JavaScript origins**.
+
+---
+
 ## 🔌 API Endpoints
+
+### `GET /api/config`
+Retrieves public application configurations (such as the Google Client ID loaded dynamically from backend environment variables).
 
 ### `GET /api/news`
 Returns aggregated, filtered, and scored news items across supported regions.
 
 ### `GET /api/proxy?url=<article-url>`
 Proxies a target article URL for the dashboard's split-screen reader view.
+
+### `POST /api/auth/google`
+Verifies a Google token credential received from the frontend and registers or retrieves the user profile.
+
+### `POST /api/auth/mock`
+Performs a mock developer sign-in locally without hitting Google API servers.
+
+### `GET /api/saved`
+Retrieves starred and "read later" article lists for a specific user.
+* **Headers**: Requires `X-User-Id` (the user's unique Google ID).
+
+### `POST /api/saved`
+Updates and syncs user starred and "read later" article lists.
+* **Headers**: Requires `X-User-Id`.
+* **Body**: `{ starred: { ... }, readLater: { ... } }`

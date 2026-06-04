@@ -48,7 +48,13 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
-  const [googleClientId, setGoogleClientId] = useState(null);
+  const [googleClientId, setGoogleClientId] = useState(() => {
+    const envId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (envId && !envId.includes('your-google-client-id-here') && !envId.includes('xxxxxxxx')) {
+      return envId;
+    }
+    return null;
+  });
 
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem('market_pulse_user');

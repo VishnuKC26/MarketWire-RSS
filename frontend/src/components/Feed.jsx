@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, BookOpen, ExternalLink, Calendar, RefreshCw } from 'lucide-react';
+import { Search, BookOpen, ExternalLink, Calendar, RefreshCw, Star, Bookmark } from 'lucide-react';
 
 // Format relative time helper
 function formatRelativeTime(timestamp) {
@@ -41,13 +41,27 @@ function isNewArticle(isoDate) {
   return isoDate > prevCheckDate.getTime();
 }
 
-export default function Feed({ articles, isLoading, error, onArticleClick, regionName }) {
+export default function Feed({ 
+  articles, 
+  isLoading, 
+  error, 
+  onArticleClick, 
+  regionName,
+  starredArticles = {},
+  readLaterArticles = {},
+  toggleStar,
+  toggleReadLater
+}) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTag, setActiveTag] = useState('All');
+  const [activeSavedFilter, setActiveSavedFilter] = useState('All Saved');
   const [readArticles, setReadArticles] = useState(() => {
-  const stored = localStorage.getItem('readArticles');
-  return stored ? JSON.parse(stored) : {};
-});
+    const stored = localStorage.getItem('readArticles');
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  const isSavedTab = regionName === 'Starred & Read Later';
+
   // Tag filter logic
   const tagKeywords = {
     All: [],
@@ -56,10 +70,13 @@ export default function Feed({ articles, isLoading, error, onArticleClick, regio
     Yields: ['yield', 'bond', 'treasury', 'yields', 'bonds', 'treasuries', 'debt', 'fixed income']
   };
 
+  const savedFilters = ['All Saved', 'Starred', 'Read Later'];
+
   // Reset search and tag on region change
   React.useEffect(() => {
     setSearchQuery('');
     setActiveTag('All');
+    setActiveSavedFilter('All Saved');
   }, [regionName]);
 
   // Filter articles based on search and tag selection
@@ -73,19 +90,28 @@ export default function Feed({ articles, isLoading, error, onArticleClick, regio
       const sourceMatches = article.source.toLowerCase().includes(searchQuery.toLowerCase());
       const searchMatches = titleMatches || summaryMatches || sourceMatches;
       
-      // 2. Tag Filter
-      if (activeTag === 'All') return searchMatches;
-      
-      const keywords = tagKeywords[activeTag];
-      const textToSearch = `${article.title} ${article.summary}`.toLowerCase();
-      const tagMatches = keywords.some(keyword => textToSearch.includes(keyword));
-      
-      return searchMatches && tagMatches;
+      // 2. Saved/Tag Filtering
+      if (isSavedTab) {
+        if (activeSavedFilter === 'All Saved') return searchMatches;
+        if (activeSavedFilter === 'Starred') {
+          return searchMatches && !!starredArticles[article.id];
+        }
+        if (activeSavedFilter === 'Read Later') {
+          return searchMatches && !!readLaterArticles[article.id];
+        }
+        return searchMatches;
+      } else {
+        if (activeTag === 'All') return searchMatches;
+        const keywords = tagKeywords[activeTag];
+        const textToSearch = `${article.title} ${article.summary}`.toLowerCase();
+        const tagMatches = keywords.some(keyword => textToSearch.includes(keyword));
+        return searchMatches && tagMatches;
+      }
     });
 
     // Sort by publication date (newest first)
     return [...filtered].sort((a, b) => b.isoDate - a.isoDate);
-  }, [articles, searchQuery, activeTag]);
+  }, [articles, searchQuery, activeTag, activeSavedFilter, isSavedTab, starredArticles, readLaterArticles]);
 
   if (error) {
     return (
@@ -112,15 +138,27 @@ export default function Feed({ articles, isLoading, error, onArticleClick, regio
         </div>
         
         <div className="tag-filters">
-          {Object.keys(tagKeywords).map(tag => (
-            <button
-              key={tag}
-              className={`filter-tag ${activeTag === tag ? 'active' : ''}`}
-              onClick={() => setActiveTag(tag)}
-            >
-              {tag}
-            </button>
-          ))}
+          {isSavedTab ? (
+            savedFilters.map(filter => (
+              <button
+                key={filter}
+                className={`filter-tag ${activeSavedFilter === filter ? 'active' : ''}`}
+                onClick={() => setActiveSavedFilter(filter)}
+              >
+                {filter}
+              </button>
+            ))
+          ) : (
+            Object.keys(tagKeywords).map(tag => (
+              <button
+                key={tag}
+                className={`filter-tag ${activeTag === tag ? 'active' : ''}`}
+                onClick={() => setActiveTag(tag)}
+              >
+                {tag}
+              </button>
+            ))
+          )}
         </div>
       </div>
 
@@ -157,18 +195,64 @@ export default function Feed({ articles, isLoading, error, onArticleClick, regio
   }}
 >
                 <div className="article-card-main">
-                  <div className="article-meta">
-                    <span className="article-source">{article.source}</span>
-                    <span className="article-time">
-                      <Calendar size={12} />
-                      {formatRelativeTime(article.isoDate)}
-                    </span>
-                    {isNew && <span className="article-badge-new">New</span>}
-                    {isRead && (
-  <span className="article-badge-read">
-    ✓ Read
-  </span>
-)}
+                  <div className="article-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span className="article-source">{article.source}</span>
+                      <span className="article-time">
+                        <Calendar size={12} />
+                        {formatRelativeTime(article.isoDate)}
+                      </span>
+                      {isNew && <span className="article-badge-new">New</span>}
+                      {isRead && <span className="article-badge-read">✓ Read</span>}
+                    </div>
+                    
+                    <div className="article-bookmark-actions" style={{ display: 'flex', alignItems: 'center', gap: '8px', zIndex: 10 }}>
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleStar(article);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: starredArticles[article.id] ? '#fbbf24' : 'var(--text-muted)',
+                          padding: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'color 0.2s, transform 0.15s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title={starredArticles[article.id] ? "Unstar article" : "Star article"}
+                      >
+                        <Star size={16} fill={starredArticles[article.id] ? '#fbbf24' : 'none'} />
+                      </button>
+                      
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleReadLater(article);
+                        }}
+                        style={{
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: readLaterArticles[article.id] ? '#10b981' : 'var(--text-muted)',
+                          padding: '4px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'color 0.2s, transform 0.15s'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.2)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                        title={readLaterArticles[article.id] ? "Remove from Read Later" : "Add to Read Later"}
+                      >
+                        <Bookmark size={16} fill={readLaterArticles[article.id] ? '#10b981' : 'none'} />
+                      </button>
+                    </div>
                   </div>
                   
                   <h3 className="article-title">{article.title}</h3>

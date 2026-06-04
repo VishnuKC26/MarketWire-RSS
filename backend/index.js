@@ -7,9 +7,19 @@ import { Readability } from '@mozilla/readability';
 import { GoogleDecoder } from 'google-news-url-decoder';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+import { OAuth2Client } from 'google-auth-library';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const dbDir = path.join(__dirname, 'db');
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir);
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -817,6 +827,133 @@ app.get('/api/proxy', async (req, res) => {
   } catch (error) {
     console.error(`Failed to proxy URL ${url}:`, error.message);
     res.status(500).send('Proxy error');
+  }
+});
+
+// Google Auth client ID verification helper
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+async function verifyGoogleToken(token) {
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: process.env.GOOGLE_CLIENT_ID,
+  });
+  return ticket.getPayload();
+}
+
+// Helper to get filepath for user's database file
+function getUserDbPath(userId) {
+  const safeId = userId.replace(/[^a-zA-Z0-9_-]/g, '');
+  return path.join(dbDir, `${safeId}.json`);
+}
+
+// Helper to read user saved articles
+function readUserSaved(userId) {
+  const filepath = getUserDbPath(userId);
+  if (!fs.existsSync(filepath)) {
+    return { starred: {}, readLater: {} };
+  }
+  try {
+    const raw = fs.readFileSync(filepath, 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    console.error(`Failed to read db for user ${userId}:`, err.message);
+    return { starred: {}, readLater: {} };
+  }
+}
+
+// Helper to write user saved articles
+function writeUserSaved(userId, data) {
+  const filepath = getUserDbPath(userId);
+  try {
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error(`Failed to write db for user ${userId}:`, err.message);
+    return false;
+  }
+}
+
+// ----------------------------
+// AUTH & PERSISTENCE ENDPOINTS
+// ----------------------------
+
+// Google Sign-In verification endpoint
+app.post('/api/auth/google', async (req, res) => {
+  const { credential } = req.body;
+  if (!credential) {
+    return res.status(400).json({ success: false, message: 'Google credential token is required' });
+  }
+
+  try {
+    const payload = await verifyGoogleToken(credential);
+    const user = {
+      id: payload.sub,
+      email: payload.email,
+      name: payload.name,
+      picture: payload.picture
+    };
+    
+    res.json({
+      success: true,
+      user
+    });
+  } catch (err) {
+    console.error('Google verification error:', err.message);
+    res.status(401).json({
+      success: false,
+      message: 'Failed to verify Google token. Check console logs for details.',
+      error: err.message
+    });
+  }
+});
+
+// Developer Mock Login endpoint
+app.post('/api/auth/mock', (req, res) => {
+  const mockUser = {
+    id: 'dev_user_123',
+    email: 'dev@local.host',
+    name: 'Developer User',
+    picture: 'https://lh3.googleusercontent.com/a/default-user=s96-c'
+  };
+  res.json({
+    success: true,
+    user: mockUser
+  });
+});
+
+// Get user saved articles
+app.get('/api/saved', (req, res) => {
+  const userId = req.headers['x-user-id'];
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
+  }
+  
+  const data = readUserSaved(userId);
+  res.json({
+    success: true,
+    data
+  });
+});
+
+// Save/update user saved articles
+app.post('/api/saved', (req, res) => {
+  const userId = req.headers['x-user-id'];
+  const { starred, readLater } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
+  }
+  
+  const updated = {
+    starred: starred || {},
+    readLater: readLater || {}
+  };
+  
+  const success = writeUserSaved(userId, updated);
+  if (success) {
+    res.json({ success: true, message: 'Saved successfully' });
+  } else {
+    res.status(500).json({ success: false, message: 'Failed to persist saved data' });
   }
 });
 

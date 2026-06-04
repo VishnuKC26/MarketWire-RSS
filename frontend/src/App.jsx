@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon } from 'lucide-react';
+import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon, Star } from 'lucide-react';
 import ScheduleTracker from './components/ScheduleTracker';
 import Feed from './components/Feed';
 
@@ -27,6 +27,12 @@ const REGION_COLORS = {
     glow: 'rgba(16, 185, 129, 0.08)',
     border: 'rgba(16, 185, 129, 0.25)',
     shadow: 'rgba(16, 185, 129, 0.15)'
+  },
+  saved: {
+    accent: '#ec4899',
+    glow: 'rgba(236, 72, 153, 0.08)',
+    border: 'rgba(236, 72, 153, 0.25)',
+    shadow: 'rgba(236, 72, 153, 0.15)'
   }
 };
 
@@ -42,6 +48,195 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
+
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem('market_pulse_user');
+    return stored ? JSON.parse(stored) : null;
+  });
+
+  const [starredArticles, setStarredArticles] = useState(() => {
+    const stored = localStorage.getItem('starredArticles');
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  const [readLaterArticles, setReadLaterArticles] = useState(() => {
+    const stored = localStorage.getItem('readLaterArticles');
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  // Fetch saved articles from backend
+  const fetchSavedArticles = async (userId) => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/saved' : '/api/saved';
+      const res = await fetch(API_URL, {
+        headers: {
+          'X-User-Id': userId
+        }
+      });
+      const result = await res.json();
+      if (result.success && result.data) {
+        setStarredArticles(result.data.starred || {});
+        setReadLaterArticles(result.data.readLater || {});
+      }
+    } catch (err) {
+      console.error('Failed to fetch saved articles:', err);
+    }
+  };
+
+  // Sync saved articles to backend
+  const syncSavedArticles = async (userId, starredMap, readLaterMap) => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/saved' : '/api/saved';
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': userId
+        },
+        body: JSON.stringify({
+          starred: starredMap,
+          readLater: readLaterMap
+        })
+      });
+    } catch (err) {
+      console.error('Failed to sync saved articles with backend:', err);
+    }
+  };
+
+  const handleLoginSuccess = (userObj) => {
+    setUser(userObj);
+    localStorage.setItem('market_pulse_user', JSON.stringify(userObj));
+    fetchSavedArticles(userObj.id);
+  };
+
+  const handleSignOut = () => {
+    setUser(null);
+    localStorage.removeItem('market_pulse_user');
+    setStarredArticles({});
+    setReadLaterArticles({});
+    localStorage.removeItem('starredArticles');
+    localStorage.removeItem('readLaterArticles');
+  };
+
+  // Load saved articles on user change
+  useEffect(() => {
+    if (user) {
+      fetchSavedArticles(user.id);
+    }
+  }, [user]);
+
+  // Handle Google Login Response
+  const handleCredentialResponse = async (response) => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/auth/google' : '/api/auth/google';
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ credential: response.credential })
+      });
+      const result = await res.json();
+      if (result.success && result.user) {
+        handleLoginSuccess(result.user);
+      } else {
+        alert(result.message || 'Verification failed');
+      }
+    } catch (err) {
+      console.error('Sign-in error:', err);
+      alert('Authentication error. See console for details.');
+    }
+  };
+
+  // Developer Mock Login
+  const handleMockLogin = async () => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/auth/mock' : '/api/auth/mock';
+      const res = await fetch(API_URL, { method: 'POST' });
+      const result = await res.json();
+      if (result.success && result.user) {
+        handleLoginSuccess(result.user);
+      }
+    } catch (err) {
+      console.error('Mock login error:', err);
+    }
+  };
+
+  // Google identity services init
+  useEffect(() => {
+    if (typeof window.google !== 'undefined' && !user) {
+      try {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || "738465611181-xxxxxxxx.apps.googleusercontent.com",
+          callback: handleCredentialResponse
+        });
+        
+        window.google.accounts.id.renderButton(
+          document.getElementById("google-signin-button"),
+          { theme: "filled_blue", size: "large", width: 220 }
+        );
+      } catch (err) {
+        console.error('Google Identity button render error:', err);
+      }
+    }
+  }, [user]);
+
+  const toggleStar = async (article) => {
+    let updatedStarred = {};
+    setStarredArticles(prev => {
+      const updated = { ...prev };
+      if (updated[article.id]) {
+        delete updated[article.id];
+      } else {
+        updated[article.id] = article;
+      }
+      updatedStarred = updated;
+      if (!user) {
+        localStorage.setItem('starredArticles', JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    if (user) {
+      await syncSavedArticles(user.id, updatedStarred, readLaterArticles);
+    }
+  };
+
+  const toggleReadLater = async (article) => {
+    let updatedReadLater = {};
+    setReadLaterArticles(prev => {
+      const updated = { ...prev };
+      if (updated[article.id]) {
+        delete updated[article.id];
+      } else {
+        updated[article.id] = article;
+      }
+      updatedReadLater = updated;
+      if (!user) {
+        localStorage.setItem('readLaterArticles', JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    if (user) {
+      await syncSavedArticles(user.id, starredArticles, updatedReadLater);
+    }
+  };
+
+  const savedArticlesList = React.useMemo(() => {
+    const merged = {};
+    Object.values(starredArticles).forEach(art => {
+      merged[art.id] = { ...art };
+    });
+    Object.values(readLaterArticles).forEach(art => {
+      if (merged[art.id]) {
+        merged[art.id] = { ...merged[art.id] };
+      } else {
+        merged[art.id] = { ...art };
+      }
+    });
+    return Object.values(merged).sort((a, b) => b.isoDate - a.isoDate);
+  }, [starredArticles, readLaterArticles]);
   
   // Selected article
   const [selectedArticle, setSelectedArticle] = useState(null);
@@ -103,7 +298,9 @@ export default function App() {
 
   // Automatically select the first article when active region or news data changes
   useEffect(() => {
-    const regionArticles = newsData[activeRegion]?.articles || [];
+    const regionArticles = activeRegion === 'saved'
+      ? savedArticlesList
+      : (newsData[activeRegion]?.articles || []);
     if (regionArticles && regionArticles.length > 0) {
       // Keep the current selection if it still exists in the new data, otherwise select the first
       const exists = regionArticles.some(art => art.id === selectedArticle?.id);
@@ -113,7 +310,7 @@ export default function App() {
     } else {
       setSelectedArticle(null);
     }
-  }, [activeRegion, newsData]);
+  }, [activeRegion, newsData, savedArticlesList]);
 
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
@@ -196,6 +393,7 @@ export default function App() {
     if (region === 'europe') return 'Europe';
     if (region === 'mideast') return 'Middle East';
     if (region === 'asia') return 'Asia Pacific';
+    if (region === 'saved') return 'Starred & Read Later';
     return region;
   };
 
@@ -204,6 +402,7 @@ export default function App() {
     if (region === 'europe') return <Globe size={18} />;
     if (region === 'mideast') return <Newspaper size={18} />;
     if (region === 'asia') return <TrendingUp size={18} />;
+    if (region === 'saved') return <Star size={18} />;
     return <Newspaper size={18} />;
   };
 
@@ -337,7 +536,78 @@ export default function App() {
 
       {/* Sidebar Navigation */}
       <aside className="sidebar">
-
+        
+        {/* User Profile / Login Widget */}
+        <div className="sidebar-profile-widget" style={{
+          padding: '16px',
+          borderBottom: '1px solid var(--border-color)',
+          marginBottom: '16px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '12px',
+          width: '100%'
+        }}>
+          {user ? (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', width: '100%' }}>
+              <img 
+                src={user.picture} 
+                alt={user.name} 
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '50%',
+                  border: '2px solid var(--accent-color)',
+                  objectFit: 'cover'
+                }} 
+              />
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontWeight: '600', fontSize: '0.9rem', color: 'var(--text-primary)' }}>{user.name}</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{user.email}</div>
+              </div>
+              <button 
+                onClick={handleSignOut}
+                style={{
+                  background: 'transparent',
+                  border: '1px solid var(--border-color)',
+                  color: 'var(--text-secondary)',
+                  borderRadius: '4px',
+                  padding: '6px 12px',
+                  fontSize: '0.8rem',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  width: '100%',
+                  marginTop: '8px',
+                  transition: 'var(--transition-fast)'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'; e.currentTarget.style.color = '#ef4444'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', width: '100%' }}>
+              <div id="google-signin-button" style={{ minHeight: '40px' }}></div>
+              <button 
+                onClick={handleMockLogin}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  fontSize: '0.75rem',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--accent-color)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+              >
+                Developer Mock Login
+              </button>
+            </div>
+          )}
+        </div>
 
         <nav className="nav-menu">
           <button 
@@ -374,6 +644,15 @@ export default function App() {
           >
             {getRegionIcon('asia')}
             <span>Asia Pacific Feed</span>
+          </button>
+
+          <button 
+            className={`nav-item-btn ${activeRegion === 'saved' ? 'active' : ''}`}
+            onClick={() => setActiveRegion('saved')}
+            style={getBtnStyle('saved')}
+          >
+            {getRegionIcon('saved')}
+            <span>Saved Articles</span>
           </button>
         </nav>
 
@@ -576,11 +855,15 @@ export default function App() {
 
           {/* Feed Viewport */}
           <Feed 
-            articles={newsData[activeRegion]?.articles || []} 
-            isLoading={isLoading} 
-            error={error} 
+            articles={activeRegion === 'saved' ? savedArticlesList : (newsData[activeRegion]?.articles || [])} 
+            isLoading={activeRegion === 'saved' ? false : isLoading} 
+            error={activeRegion === 'saved' ? null : error} 
             onArticleClick={handleArticleClick}
             regionName={getRegionDisplayName(activeRegion)}
+            starredArticles={starredArticles}
+            readLaterArticles={readLaterArticles}
+            toggleStar={toggleStar}
+            toggleReadLater={toggleReadLater}
           />
         </div>
 

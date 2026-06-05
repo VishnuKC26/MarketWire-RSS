@@ -380,7 +380,11 @@ export default function App() {
   }, [activeRegion, newsData, savedArticlesList]);
 
   const handleArticleClick = (article) => {
-    if (window.innerWidth <= 768) {
+    const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod|Windows Phone|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+      (navigator.maxTouchPoints > 0 && /Macintosh/.test(navigator.userAgent)) ||
+      window.screen.width <= 768;
+
+    if (isMobileDevice) {
       window.open(article.link, '_blank');
       return;
     }

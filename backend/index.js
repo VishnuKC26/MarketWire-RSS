@@ -726,73 +726,108 @@ async function fetchRegionFeeds(region) {
     return true;
   });
 
-  // Slice to top 80
-  const topArticles = uniqueArticles.slice(0, 80);
-
-  const resolvedArticles = await pMap(
-    topArticles,
-    async (article) => {
-      if (
-        article.link &&
-        article.link.includes('news.google.com')
-      ) {
-        const resolvedLink = await resolveUrl(article.link);
-
-        return {
-          ...article,
-          link: resolvedLink
-        };
-      }
-
-      return article;
-    },
-    5
-  );
+  // Slice to top 60 (frontend only displays up to 60)
+  const topArticles = uniqueArticles.slice(0, 60);
 
   return {
-    articles: resolvedArticles
+    articles: topArticles
   };
 }
+
+let cachedNewsData = null;
+let cacheTimestamp = 0;
+const CACHE_DURATION = 3 * 60 * 1000; // 3 minutes cache duration
+let activeFetchPromise = null;
+
+async function performNewsFetch() {
+  const [global, americas, europe, mideast, asia] = await Promise.all([
+    fetchRegionFeeds('global'),
+    fetchRegionFeeds('americas'),
+    fetchRegionFeeds('europe'),
+    fetchRegionFeeds('mideast'),
+    fetchRegionFeeds('asia')
+  ]);
+
+  const data = {
+    global: {
+      regionName: 'GLOBAL MARKETS',
+      articles: global.articles
+    },
+    americas: {
+      regionName: 'AMERICAS',
+      articles: americas.articles
+    },
+    europe: {
+      regionName: 'EUROPE',
+      articles: europe.articles
+    },
+    mideast: {
+      regionName: 'MIDDLE EAST',
+      articles: mideast.articles
+    },
+    asia: {
+      regionName: 'ASIA PACIFIC',
+      articles: asia.articles
+    }
+  };
+
+  cachedNewsData = data;
+  cacheTimestamp = Date.now();
+  return data;
+}
+
 // Endpoint to fetch news for all regions
 app.get('/api/news', async (req, res) => {
   try {
-    const [global, americas, europe, mideast, asia] = await Promise.all([
-      fetchRegionFeeds('global'),
-      fetchRegionFeeds('americas'),
-      fetchRegionFeeds('europe'),
-      fetchRegionFeeds('mideast'),
-      fetchRegionFeeds('asia')
-    ]);
+    const now = Date.now();
+    
+    // If we have cached data and it's fresh, return it immediately
+    if (cachedNewsData && (now - cacheTimestamp < CACHE_DURATION)) {
+      return res.json({
+        success: true,
+        timestamp: cacheTimestamp,
+        data: cachedNewsData,
+        cached: true
+      });
+    }
+
+    // If an active fetch is already in progress, wait for it
+    if (activeFetchPromise) {
+      const data = await activeFetchPromise;
+      return res.json({
+        success: true,
+        timestamp: cacheTimestamp,
+        data: data,
+        cached: true
+      });
+    }
+
+    // Otherwise, start a new fetch
+    activeFetchPromise = performNewsFetch();
+    const data = await activeFetchPromise;
+    activeFetchPromise = null;
 
     res.json({
       success: true,
-      timestamp: Date.now(),
-      data: {
-        global: {
-          regionName: 'GLOBAL MARKETS',
-          articles: global.articles
-        },
-        americas: {
-          regionName: 'AMERICAS',
-          articles: americas.articles
-        },
-        europe: {
-          regionName: 'EUROPE',
-          articles: europe.articles
-        },
-        mideast: {
-          regionName: 'MIDDLE EAST',
-          articles: mideast.articles
-        },
-        asia: {
-          regionName: 'ASIA PACIFIC',
-          articles: asia.articles
-        }
-      }
+      timestamp: cacheTimestamp,
+      data: data,
+      cached: false
     });
 
   } catch (error) {
+    activeFetchPromise = null;
     console.error('Failed to aggregate news feeds:', error);
+
+    // If we have stale cache, return it as a fallback instead of failing
+    if (cachedNewsData) {
+      return res.json({
+        success: true,
+        timestamp: cacheTimestamp,
+        data: cachedNewsData,
+        stale: true,
+        error: error.message
+      });
+    }
 
     res.status(500).json({
       success: false,

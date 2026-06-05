@@ -110,7 +110,8 @@ export default function Feed({
     });
 
     // Sort by publication date (newest first)
-    return [...filtered].sort((a, b) => b.isoDate - a.isoDate);
+    const sorted = [...filtered].sort((a, b) => b.isoDate - a.isoDate);
+    return isSavedTab ? sorted : sorted.slice(0, 60);
   }, [articles, searchQuery, activeTag, activeSavedFilter, isSavedTab, starredArticles, readLaterArticles]);
 
   if (error) {

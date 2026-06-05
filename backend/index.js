@@ -81,132 +81,191 @@ const parser = new RSSParser({
 
 // Configure the feeds to aggregate for each region based on Tiers 1, 2, and 3
 const FEEDS = {
-americas: [
-{
-name: 'Reuters Americas',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets"+OR+"market+wrap"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 1
-},
-{
-name: 'Bloomberg Americas',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"global+markets"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 1
-},
-{
-name: 'CNBC Markets',
-url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 2
-},
-{
-name: 'MarketWatch Markets',
-url: 'https://news.google.com/rss/search?q=site:marketwatch.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 2
-},
-{
-name: 'Yahoo Finance Americas',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 3
-},
-{
-name: 'Investing Americas',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 3
-}
-],
-
-europe: [
-{
-name: 'Reuters Europe',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
-tier: 1
-},
-{
-name: 'Bloomberg Europe',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
-tier: 1
-},
-{
-name: 'CNBC Europe',
-url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
-tier: 2
-},
-{
-name: 'Yahoo Finance Europe',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
-tier: 3
-},
-{
-name: 'Investing Europe',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:2d&hl=en-GB&gl=GB&ceid=GB:en',
-tier: 3
-}
-],
-
-mideast: [
-{
-name: 'Reuters Middle East',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:2d&hl=en-AE&gl=AE&ceid=AE:en',
-tier: 1
-},
-{
-name: 'Bloomberg Middle East',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:2d&hl=en-AE&gl=AE&ceid=AE:en',
-tier: 1
-},
-{
-name: 'CNBC Middle East',
-url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 2
-},
-{
-name: 'Yahoo Finance Middle East',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 3
-},
-{
-name: 'Investing Middle East',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:2d&hl=en-US&gl=US&ceid=US:en',
-tier: 3
-}
-],
-
-asia: [
-{
-name: 'Reuters Asia',
-url: 'https://news.google.com/rss/search?q=site:reuters.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
-tier: 1
-},
-{
-name: 'Bloomberg Asia',
-url: 'https://news.google.com/rss/search?q=site:bloomberg.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
-tier: 1
-},
-{
-name: 'Nikkei Asia',
-url: 'https://news.google.com/rss/search?q=site:asia.nikkei.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nikkei+225"+OR+TOPIX)+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
-tier: 2
-},
-{
-name: 'Economic Times Markets',
-url: 'https://news.google.com/rss/search?q=site:economictimes.indiatimes.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nifty+50"+OR+Sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
-tier: 2
-},
-{
-name: 'Mint Markets',
-url: 'https://news.google.com/rss/search?q=site:livemint.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nifty+50"+OR+Sensex)+when:2d&hl=en-IN&gl=IN&ceid=IN:en',
-tier: 2
-},
-{
-name: 'Yahoo Finance Asia',
-url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
-tier: 3
-},
-{
-name: 'Investing Asia',
-url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:2d&hl=en-SG&gl=SG&ceid=SG:en',
-tier: 3
-}
-]
+  global: [
+    {
+      name: 'Reuters Global Markets',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+("global+markets"+OR+"world+markets"+OR+"market+wrap"+OR+"morning+news+call"+OR+"evening+news+call"+OR+"week+ahead"+OR+"market+outlook"+OR+"daily+briefing")+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 1
+    },
+    {
+      name: 'Financial Times Markets',
+      url: 'https://news.google.com/rss/search?q=site:ft.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 2
+    },
+    {
+      name: 'Trading Economics',
+      url: 'https://news.google.com/rss/search?q=site:tradingeconomics.com+(markets+OR+stocks+OR+bonds+OR+indicators)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 2
+    },
+    {
+      name: 'CNBC Markets',
+      url: 'https://news.google.com/rss/search?q=site:cnbc.com+("global+markets"+OR+"market+wrap"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+VIX)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    }
+  ],
+  americas: [
+    {
+      name: 'Reuters Americas',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+("S%26P+500"+OR+Nasdaq+OR+Dow+OR+"Russell+2000"+OR+VIX+OR+"Wall+Street"+OR+"Treasury+yields"+OR+"US+stocks")+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 1
+    },
+    {
+      name: 'Barron\'s',
+      url: 'https://news.google.com/rss/search?q=site:barrons.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    },
+    {
+      name: 'Trading Economics',
+      url: 'https://news.google.com/rss/search?q=site:tradingeconomics.com+(markets+OR+stocks+OR+bonds+OR+indicators)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    },
+    {
+      name: 'CNBC',
+      url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    },
+    {
+      name: 'MarketWatch',
+      url: 'https://news.google.com/rss/search?q=site:marketwatch.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    },
+    {
+      name: 'Investing.com',
+      url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 3
+    },
+    {
+      name: 'Yahoo Finance',
+      url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"wall+street"+OR+"S%26P+500"+OR+Nasdaq+OR+"Dow+Jones"+OR+"Russell+2000"+OR+VIX)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 4
+    }
+  ],
+  europe: [
+    {
+      name: 'Reuters Europe',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(DAX+OR+FTSE+OR+CAC+OR+"STOXX+600"+OR+"Euro+Stoxx"+OR+"European+stocks"+OR+"European+markets")+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 1
+    },
+    {
+      name: 'Financial Times',
+      url: 'https://news.google.com/rss/search?q=site:ft.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 2
+    },
+    {
+      name: 'Trading Economics',
+      url: 'https://news.google.com/rss/search?q=site:tradingeconomics.com+(markets+OR+stocks+OR+bonds+OR+indicators)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 2
+    },
+    {
+      name: 'Euronews Business',
+      url: 'https://news.google.com/rss/search?q=site:euronews.com/business+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 2
+    },
+    {
+      name: 'Investing.com',
+      url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+europe+OR+european+OR+DAX+OR+"FTSE+100"+OR+"CAC+40"+OR+"STOXX+600"+OR+"Euro+Stoxx+50"+OR+"FTSE+MIB"+OR+"IBEX+35"+OR+AEX)+when:3d&hl=en-GB&gl=GB&ceid=GB:en',
+      tier: 3
+    }
+  ],
+  mideast: [
+    {
+      name: 'Reuters Middle East',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+("Middle+East+markets"+OR+"Saudi+stocks"+OR+TASI+OR+"Dubai+stocks"+OR+"Qatar+stocks"+OR+"Israel+markets")+when:3d&hl=en-AE&gl=AE&ceid=AE:en',
+      tier: 1
+    },
+    {
+      name: 'CNBC Middle East',
+      url: 'https://news.google.com/rss/search?q=site:cnbc.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 2
+    },
+    {
+      name: 'Investing Middle East',
+      url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+israel+OR+israeli+OR+"middle+east"+OR+mideast)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 3
+    }
+  ],
+  asia: [
+    {
+      name: 'Reuters Asia',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Nikkei+OR+TOPIX+OR+"Hang+Seng"+OR+"CSI+300"+OR+"Shanghai+Composite"+OR+Kospi+OR+Nifty+OR+Sensex+OR+"ASX+200"+OR+"Asian+stocks"+OR+"Asian+markets")+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters India',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(India+stocks+OR+Nifty+OR+Sensex+OR+India+markets)+when:3d&hl=en-IN&gl=IN&ceid=IN:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters Japan',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Japan+stocks+OR+Nikkei+OR+TOPIX+OR+Japan+markets)+when:3d&hl=en-JP&gl=JP&ceid=JP:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters China',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(China+OR+Chinese+OR+%22China+markets%22+OR+%22Chinese+stocks%22+OR+%22China+economy%22+OR+%22China+stimulus%22+OR+PBOC+OR+yuan+OR+renminbi+OR+Shanghai+Composite+OR+CSI+300+OR+Shenzhen+OR+mainland+OR+property+OR+%22property+sector%22+OR+%22Hong+Kong+stocks%22+OR+%22technology+shares%22+OR+%22consumer+stocks%22)+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters Australia',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Australia+stocks+OR+ASX+OR+Australia+markets)+when:3d&hl=en-AU&gl=AU&ceid=AU:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters South Korea',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Korea+stocks+OR+Kospi+OR+Korea+markets)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters Taiwan',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Taiwan+stocks+OR+Taiex+OR+Taiwan+markets)+when:3d&hl=en-US&gl=US&ceid=US:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters Singapore',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Singapore+stocks+OR+STI+OR+Singapore+markets)+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 1
+    },
+    {
+      name: 'Reuters Hong Kong',
+      url: 'https://news.google.com/rss/search?q=site:reuters.com+(Hong+Kong+stocks+OR+Hang+Seng+OR+Hong+Kong+markets)+when:3d&hl=en-HK&gl=HK&ceid=HK:en',
+      tier: 1
+    },
+    {
+      name: 'Nikkei Asia',
+      url: 'https://news.google.com/rss/search?q=site:asia.nikkei.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+"Nikkei+225"+OR+TOPIX)+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 2
+    },
+    {
+      name: 'South China Morning Post',
+      url: 'https://news.google.com/rss/search?q=site:scmp.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 2
+    },
+    {
+      name: 'Caixin Global',
+      url: 'https://news.google.com/rss/search?q=site:caixinglobal.com+(markets+OR+stocks+OR+economy)+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 2
+    },
+    {
+      name: 'Business Standard',
+      url: 'https://news.google.com/rss/search?q=site:business-standard.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-IN&gl=IN&ceid=IN:en',
+      tier: 2
+    },
+    {
+      name: 'Moneycontrol',
+      url: 'https://news.google.com/rss/search?q=site:moneycontrol.com+(markets+OR+stocks+OR+bonds+OR+economy)+when:3d&hl=en-IN&gl=IN&ceid=IN:en',
+      tier: 2
+    },
+    {
+      name: 'Investing.com',
+      url: 'https://news.google.com/rss/search?q=site:investing.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 3
+    },
+    {
+      name: 'Yahoo Finance',
+      url: 'https://news.google.com/rss/search?q=site:finance.yahoo.com+(stock+OR+stocks+OR+equity+OR+equities+OR+market+OR+markets+OR+share+OR+shares+OR+asia+OR+asian+OR+"Nikkei+225"+OR+TOPIX+OR+"Hang+Seng"+OR+"Shanghai+Composite"+OR+"CSI+300"+OR+Kospi+OR+"Nifty+50"+OR+Sensex+OR+"ASX+200")+when:3d&hl=en-SG&gl=SG&ceid=SG:en',
+      tier: 4
+    }
+  ]
 };
 
 
@@ -326,7 +385,24 @@ const RELEVANT_KEYWORDS = [
 'risk sentiment',
 'risk appetite',
 'risk-off',
-'risk-on'
+'risk-on',
+'global markets',
+'world markets',
+'market wrap',
+'emerging markets',
+'forex',
+'commodities',
+'morning news call',
+'evening news call',
+'week ahead',
+'market outlook',
+'daily briefing',
+'pboc',
+'yuan',
+'renminbi',
+'stimulus',
+'property sector',
+'local government debt'
 ];
 
 // ----------------------------
@@ -431,185 +507,101 @@ return true;
 // ----------------------------
 
 function calculateScore(item, tier) {
+  let score = 0;
 
-let score = 0;
+  // Source quality
+  if (tier === 1) score += 25;
+  else if (tier === 2) score += 15;
+  else score += 5;
 
-// Source quality
+  const title = (item.title || '').toLowerCase();
+  const content = `${item.title || ''} ${item.summary || ''}`.toLowerCase();
 
-if (tier === 1) score += 25;
-else if (tier === 2) score += 15;
-else score += 5;
+  // Source Boosts
+  if (item.source.includes('Reuters')) {
+    score += 35;
+  }
+  if (item.source.includes('Financial Times') || item.source.includes('Financial Times Markets')) {
+    score += 20;
+  }
+  if (item.source.includes('Trading Economics')) {
+    score += 18;
+  }
+  if (item.source.includes('Nikkei') || item.source.includes('Nikkei Asia')) {
+    score += 15;
+  }
+  if (item.source.includes('South China Morning Post') || item.source.includes('SCMP')) {
+    score += 15;
+  }
+  if (item.source.includes('Caixin') || item.source.includes('Caixin Global')) {
+    score += 15;
+  }
 
-const title = (item.title || '').toLowerCase();
-const content =
-`${item.title || ''} ${item.summary || ''}`.toLowerCase();
+  // Title-level Global/World Markets Boost
+  if (title.includes('global markets') || title.includes('world markets')) {
+    score += 40;
+  }
 
-// Market wrap articles
+  // Market Summary Boost
+  const summaryKeywords = [
+    'global markets',
+    'world markets',
+    'market wrap',
+    'markets today',
+    'morning news call',
+    'evening news call',
+    'week ahead',
+    'market outlook',
+    'daily briefing'
+  ];
+  if (summaryKeywords.some(k => content.includes(k))) {
+    score += 50;
+  }
 
-if (
-content.includes('market wrap') ||
-content.includes('global markets') ||
-content.includes('markets today') ||
-content.includes('wall street')
-) {
-score += 20;
-}
+  // China Macro Boost
+  const chinaMacroKeywords = ['pboc', 'yuan', 'renminbi', 'china stimulus', 'chinese stimulus'];
+  if (chinaMacroKeywords.some(k => content.includes(k))) {
+    score += 20;
+  }
 
-// Central banks
+  // China Headline Boost
+  const chinaTitleKeywords = ['china markets', 'china economy', 'chinese markets', 'chinese economy'];
+  if (chinaTitleKeywords.some(k => title.includes(k))) {
+    score += 25;
+  }
 
-if (
-content.includes('fed') ||
-content.includes('federal reserve') ||
-content.includes('ecb') ||
-content.includes('boj') ||
-content.includes('pboc') ||
-content.includes('rbi')
-) {
-score += 15;
-}
+  // Central Bank Boost
+  const centralBankKeywords = ['fed', 'federal reserve', 'ecb', 'boj', 'pboc', 'rbi'];
+  if (centralBankKeywords.some(k => content.includes(k))) {
+    score += 20;
+  }
 
-// Inflation & macro
+  // Bond Market Boost
+  const bondKeywords = ['treasury', 'treasury yields', 'yields', 'bond market', 'bonds'];
+  if (bondKeywords.some(k => content.includes(k))) {
+    score += 15;
+  }
 
-if (
-content.includes('inflation') ||
-content.includes('cpi') ||
-content.includes('ppi') ||
-content.includes('payrolls') ||
-content.includes('employment') ||
-content.includes('gdp')
-) {
-score += 12;
-}
+  // Freshness boost
+  const ageHours = (Date.now() - item.isoDate) / (1000 * 60 * 60);
+  if (ageHours < 1) score += 30;
+  else if (ageHours < 3) score += 25;
+  else if (ageHours < 6) score += 20;
+  else if (ageHours < 12) score += 10;
+  else if (ageHours < 24) score += 5;
 
-// Bond market
+  // Penalize corporate stories
+  if (
+    content.includes('earnings') ||
+    content.includes('ipo') ||
+    content.includes('analyst upgrade') ||
+    content.includes('analyst downgrade') ||
+    content.includes('price target')
+  ) {
+    score -= 10;
+  }
 
-if (
-content.includes('yield') ||
-content.includes('yields') ||
-content.includes('treasury') ||
-content.includes('bond market')
-) {
-score += 12;
-}
-
-// Energy
-
-if (
-content.includes('oil') ||
-content.includes('crude') ||
-content.includes('energy')
-) {
-score += 10;
-}
-
-// Major index mentions (Priority 2 & 4)
-
-const majorIndices = [
-'s&p',
-'nasdaq',
-'dow',
-'nikkei',
-'hang seng',
-'kospi',
-'nifty',
-'sensex',
-'dax',
-'ftse',
-'cac',
-'topix',
-'stoxx 600',
-'euro stoxx',
-'euro stoxx 50',
-'shanghai composite',
-'csi 300',
-'ftse mib',
-'ibex',
-'aex',
-'asx 200',
-'tsx',
-'bovespa'
-];
-
-if (
-majorIndices.some(index =>
-content.includes(index)
-)
-) {
-score += 25;
-}
-
-// Reward multiple index mentions (Priority 3)
-const indexCount = majorIndices.filter(index =>
-content.includes(index)
-).length;
-
-score += indexCount * 8;
-
-// Dedicated Index Boost (Priority 5)
-const indexKeywords = [
-  's&p',
-  'nasdaq',
-  'dow',
-  'russell 2000',
-  'vix',
-  'dax',
-  'ftse',
-  'cac',
-  'stoxx',
-  'nikkei',
-  'topix',
-  'hang seng',
-  'kospi',
-  'shanghai',
-  'csi 300',
-  'nifty',
-  'sensex',
-  'asx'
-];
-
-if (
-  indexKeywords.some(index =>
-    content.includes(index)
-  )
-) {
-  score += 25;
-}
-
-// Boost for core market terms in title
-if (
-title.includes('stock') ||
-title.includes('market') ||
-title.includes('share') ||
-title.includes('equity')
-) {
-score += 10;
-}
-
-// Freshness boost
-
-const ageHours =
-(Date.now() - item.isoDate) /
-(1000 * 60 * 60);
-
-if (ageHours < 1) score += 30;
-else if (ageHours < 3) score += 25;
-else if (ageHours < 6) score += 20;
-else if (ageHours < 12) score += 10;
-else if (ageHours < 24) score += 5;
-
-// Penalize corporate stories (reduced from -20 to -10 to be more inclusive)
-
-if (
-content.includes('earnings') ||
-content.includes('ipo') ||
-content.includes('analyst upgrade') ||
-content.includes('analyst downgrade') ||
-content.includes('price target')
-) {
-score -= 10;
-}
-
-return score;
+  return score;
 }
 
 
@@ -643,19 +635,44 @@ async function fetchRegionFeeds(region) {
 
       const feed = await parser.parseString(cleanXml);
 
-      const mapped = feed.items.map(item => ({
-        id: item.guid || item.link || item.title,
-        title: cleanTitle(item.title, source.name),
-        link: item.link,
-        pubDate: item.pubDate || item.isoDate,
-        isoDate: item.isoDate
-          ? new Date(item.isoDate).getTime()
-          : Date.now(),
-        source: source.name,
-        summary: item.contentSnippet || item.content || '',
-        category: item.categories ? item.categories[0] : null,
-        tier: source.tier
-      }));
+      const mapped = feed.items.map(item => {
+        const titleClean = cleanTitle(item.title, source.name);
+        const rawSummary = item.contentSnippet || item.content || '';
+        const summaryClean = rawSummary.replace(/<[^>]*>/g, '').trim();
+
+        // Standardize strings for redundancy check
+        const compareTitle = titleClean.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const compareSummary = summaryClean.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+        let isRedundant = false;
+        if (compareSummary === compareTitle) {
+          isRedundant = true;
+        } else if (compareSummary.startsWith(compareTitle)) {
+          const extraPart = compareSummary.slice(compareTitle.length);
+          if (extraPart.length < 30) {
+            isRedundant = true;
+          }
+        } else if (compareTitle.startsWith(compareSummary)) {
+          const extraPart = compareTitle.slice(compareSummary.length);
+          if (extraPart.length < 30) {
+            isRedundant = true;
+          }
+        }
+
+        return {
+          id: item.guid || item.link || item.title,
+          title: titleClean,
+          link: item.link,
+          pubDate: item.pubDate || item.isoDate,
+          isoDate: item.isoDate
+            ? new Date(item.isoDate).getTime()
+            : Date.now(),
+          source: source.name,
+          summary: isRedundant ? '' : rawSummary,
+          category: item.categories ? item.categories[0] : null,
+          tier: source.tier
+        };
+      });
 
       return mapped;
 
@@ -679,29 +696,10 @@ async function fetchRegionFeeds(region) {
     }
   });
 
-  // Deduplicate URLs
-  const seenUrls = new Set();
-
-  const uniqueArticles = aggregated.filter(article => {
-    if (!article.link) return false;
-
-    const normalizedUrl = article.link
-      .split('?')[0]
-      .replace(/\/$/, '');
-
-    if (seenUrls.has(normalizedUrl)) {
-      return false;
-    }
-
-    seenUrls.add(normalizedUrl);
-
-    return true;
-  });
-
-  // Filter out articles older than 2 days
-  const twoDaysMs = 2 * 24 * 60 * 60 * 1000;
-  const recentArticles = uniqueArticles.filter(article => {
-    return (Date.now() - article.isoDate) <= twoDaysMs;
+  // Filter out articles older than 3 days
+  const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+  const recentArticles = aggregated.filter(article => {
+    return (Date.now() - article.isoDate) <= threeDaysMs;
   });
 
   // Apply relevance filter
@@ -713,9 +711,23 @@ async function fetchRegionFeeds(region) {
     score: calculateScore(article, article.tier)
   }));
 
+  // Sort by score descending first
   scoredArticles.sort((a, b) => b.score - a.score);
 
-  const topArticles = scoredArticles.slice(0, 40);
+  // Deduplicate by normalized title (retaining the first/highest-scoring occurrence)
+  const seenTitles = new Set();
+  const uniqueArticles = scoredArticles.filter(article => {
+    if (!article.title) return false;
+    const key = cleanTitle(article.title).toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (seenTitles.has(key)) {
+      return false;
+    }
+    seenTitles.add(key);
+    return true;
+  });
+
+  // Slice to top 80
+  const topArticles = uniqueArticles.slice(0, 80);
 
   const resolvedArticles = await pMap(
     topArticles,
@@ -742,10 +754,10 @@ async function fetchRegionFeeds(region) {
   };
 }
 // Endpoint to fetch news for all regions
-// Endpoint to fetch news for all regions
 app.get('/api/news', async (req, res) => {
   try {
-    const [americas, europe, mideast, asia] = await Promise.all([
+    const [global, americas, europe, mideast, asia] = await Promise.all([
+      fetchRegionFeeds('global'),
       fetchRegionFeeds('americas'),
       fetchRegionFeeds('europe'),
       fetchRegionFeeds('mideast'),
@@ -756,6 +768,10 @@ app.get('/api/news', async (req, res) => {
       success: true,
       timestamp: Date.now(),
       data: {
+        global: {
+          regionName: 'GLOBAL MARKETS',
+          articles: global.articles
+        },
         americas: {
           regionName: 'AMERICAS',
           articles: americas.articles

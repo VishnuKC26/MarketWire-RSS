@@ -4,6 +4,12 @@ import ScheduleTracker from './components/ScheduleTracker';
 import Feed from './components/Feed';
 
 const REGION_COLORS = {
+  global: {
+    accent: '#06b6d4',
+    glow: 'rgba(6, 182, 212, 0.08)',
+    border: 'rgba(6, 182, 212, 0.25)',
+    shadow: 'rgba(6, 182, 212, 0.15)'
+  },
   americas: {
     accent: '#4a72ff',
     glow: 'rgba(74, 114, 255, 0.08)',
@@ -37,7 +43,7 @@ const REGION_COLORS = {
 };
 
 export default function App() {
-  const [activeRegion, setActiveRegion] = useState('americas'); // 'americas', 'europe', 'mideast', 'asia'
+  const [activeRegion, setActiveRegion] = useState('global'); // 'global', 'americas', 'europe', 'mideast', 'asia'
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleRegionSelect = (region) => {
@@ -45,6 +51,7 @@ export default function App() {
     setIsMobileMenuOpen(false);
   };
   const [newsData, setNewsData] = useState({
+    global: { regionName: 'GLOBAL MARKETS', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
     americas: { regionName: 'AMERICAS', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
     europe: { regionName: 'EUROPE', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
     mideast: { regionName: 'MIDDLE EAST', performance: [], mainDriver: '', confidence: 'Low', articles: [] },
@@ -453,6 +460,7 @@ export default function App() {
   };
 
   const getRegionDisplayName = (region) => {
+    if (region === 'global') return 'Global Markets';
     if (region === 'americas') return 'Americas Market';
     if (region === 'europe') return 'Europe';
     if (region === 'mideast') return 'Middle East';
@@ -462,6 +470,7 @@ export default function App() {
   };
 
   const getRegionIcon = (region) => {
+    if (region === 'global') return <Globe size={18} />;
     if (region === 'americas') return <Compass size={18} />;
     if (region === 'europe') return <Globe size={18} />;
     if (region === 'mideast') return <Newspaper size={18} />;
@@ -678,6 +687,15 @@ export default function App() {
 
         <nav className="nav-menu">
           <button 
+            className={`nav-item-btn ${activeRegion === 'global' ? 'active' : ''}`}
+            onClick={() => handleRegionSelect('global')}
+            style={getBtnStyle('global')}
+          >
+            {getRegionIcon('global')}
+            <span>Global Markets</span>
+          </button>
+
+          <button 
             className={`nav-item-btn ${activeRegion === 'americas' ? 'active' : ''}`}
             onClick={() => handleRegionSelect('americas')}
             style={getBtnStyle('americas')}
@@ -747,6 +765,14 @@ export default function App() {
             <div className="header-controls" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {/* Compact Region Selector for Split/Mobile View */}
               <div className="header-region-selector">
+                <button 
+                  className={`region-pill-btn ${activeRegion === 'global' ? 'active' : ''}`}
+                  onClick={() => setActiveRegion('global')}
+                  style={getBtnStyle('global')}
+                  title="Global Markets Feed"
+                >
+                  Global
+                </button>
                 <button 
                   className={`region-pill-btn ${activeRegion === 'americas' ? 'active' : ''}`}
                   onClick={() => setActiveRegion('americas')}

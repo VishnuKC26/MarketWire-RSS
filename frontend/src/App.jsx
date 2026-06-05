@@ -1,7 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon, Star, Menu } from 'lucide-react';
+import { RefreshCw, TrendingUp, Globe, Compass, Newspaper, AlertTriangle, X, Sun, Moon, Star, Menu, Clipboard, FileText, Check } from 'lucide-react';
 import ScheduleTracker from './components/ScheduleTracker';
 import Feed from './components/Feed';
+import Notepad from './components/Notepad';
+
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 const REGION_COLORS = {
   global: {
@@ -39,6 +47,12 @@ const REGION_COLORS = {
     glow: 'rgba(236, 72, 153, 0.08)',
     border: 'rgba(236, 72, 153, 0.25)',
     shadow: 'rgba(236, 72, 153, 0.15)'
+  },
+  notepad: {
+    accent: '#a855f7',
+    glow: 'rgba(168, 85, 247, 0.08)',
+    border: 'rgba(168, 85, 247, 0.25)',
+    shadow: 'rgba(168, 85, 247, 0.15)'
   }
 };
 
@@ -84,6 +98,64 @@ export default function App() {
     return stored ? JSON.parse(stored) : {};
   });
 
+  const [notes, setNotes] = useState(() => {
+    const stored = localStorage.getItem('market_pulse_notes');
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  const [activeDate, setActiveDate] = useState(getLocalDateString());
+
+  const [toast, setToast] = useState(null);
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+  };
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  // Fetch notes from backend
+  const fetchNotes = async (userId) => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/notes' : '/api/notes';
+      const res = await fetch(API_URL, {
+        headers: {
+          'X-User-Id': userId
+        }
+      });
+      const result = await res.json();
+      if (result.success && result.notes) {
+        setNotes(result.notes || {});
+      }
+    } catch (err) {
+      console.error('Failed to fetch notes:', err);
+    }
+  };
+
+  // Sync notes to backend
+  const syncNotes = async (userId, notesMap) => {
+    try {
+      const API_URL = import.meta.env.DEV ? 'http://localhost:3001/api/notes' : '/api/notes';
+      await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-User-Id': userId
+        },
+        body: JSON.stringify({
+          notes: notesMap
+        })
+      });
+    } catch (err) {
+      console.error('Failed to sync notes with backend:', err);
+    }
+  };
+
   // Fetch saved articles from backend
   const fetchSavedArticles = async (userId) => {
     try {
@@ -127,6 +199,7 @@ export default function App() {
     setUser(userObj);
     localStorage.setItem('market_pulse_user', JSON.stringify(userObj));
     fetchSavedArticles(userObj.id);
+    fetchNotes(userObj.id);
   };
 
   const handleSignOut = () => {
@@ -134,14 +207,151 @@ export default function App() {
     localStorage.removeItem('market_pulse_user');
     setStarredArticles({});
     setReadLaterArticles({});
+    setNotes({});
     localStorage.removeItem('starredArticles');
     localStorage.removeItem('readLaterArticles');
+    localStorage.removeItem('market_pulse_notes');
+  };
+
+  const handleSaveManualNote = async (content, dateStr) => {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+    
+    const newEntry = {
+      id: Date.now().toString(),
+      time: timeStr,
+      content,
+      pinned: false
+    };
+
+    let updatedNotes = {};
+    setNotes(prev => {
+      const dayNotes = prev[dateStr] ? [...prev[dateStr]] : [];
+      const updatedDayNotes = [...dayNotes, newEntry];
+      updatedNotes = {
+        ...prev,
+        [dateStr]: updatedDayNotes
+      };
+      
+      if (!user) {
+        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
+      }
+      return updatedNotes;
+    });
+
+    if (user) {
+      await syncNotes(user.id, updatedNotes);
+    }
+    showToast('Note saved successfully!', 'success');
+  };
+
+  const handlePasteFromClipboard = async (dateStr) => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (!text || text.trim() === '') {
+        showToast('Clipboard is empty', 'error');
+        return;
+      }
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+      const newEntry = {
+        id: Date.now().toString(),
+        time: timeStr,
+        content: text.trim(),
+        pinned: false
+      };
+
+      let updatedNotes = {};
+      setNotes(prev => {
+        const dayNotes = prev[dateStr] ? [...prev[dateStr]] : [];
+        const updatedDayNotes = [...dayNotes, newEntry];
+        updatedNotes = {
+          ...prev,
+          [dateStr]: updatedDayNotes
+        };
+
+        if (!user) {
+          localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
+        }
+        return updatedNotes;
+      });
+
+      if (user) {
+        await syncNotes(user.id, updatedNotes);
+      }
+      showToast('Pasted to notepad!', 'success');
+    } catch (err) {
+      console.error('Clipboard paste failed:', err);
+      showToast('Clipboard access unavailable. Please paste manually.', 'error');
+    }
+  };
+
+  const handleDeleteNote = async (id, dateStr) => {
+    let updatedNotes = {};
+    setNotes(prev => {
+      const dayNotes = prev[dateStr] ? [...prev[dateStr]] : [];
+      const updatedDayNotes = dayNotes.filter(n => n.id !== id);
+      
+      updatedNotes = {
+        ...prev,
+        [dateStr]: updatedDayNotes
+      };
+
+      if (!user) {
+        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
+      }
+      return updatedNotes;
+    });
+
+    if (user) {
+      await syncNotes(user.id, updatedNotes);
+    }
+    showToast('Note deleted', 'success');
+  };
+
+  const handleTogglePinNote = async (id, dateStr) => {
+    let updatedNotes = {};
+    setNotes(prev => {
+      const dayNotes = prev[dateStr] ? [...prev[dateStr]] : [];
+      const updatedDayNotes = dayNotes.map(n => 
+        n.id === id ? { ...n, pinned: !n.pinned } : n
+      );
+
+      updatedNotes = {
+        ...prev,
+        [dateStr]: updatedDayNotes
+      };
+
+      if (!user) {
+        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
+      }
+      return updatedNotes;
+    });
+
+    if (user) {
+      await syncNotes(user.id, updatedNotes);
+    }
+    showToast('Note pin status updated', 'success');
+  };
+
+  const handleCopyNoteText = (content) => {
+    navigator.clipboard.writeText(content)
+      .then(() => {
+        showToast('Note content copied to clipboard!', 'success');
+      })
+      .catch(err => {
+        console.error('Failed to copy text:', err);
+        showToast('Failed to copy to clipboard', 'error');
+      });
   };
 
   // Load saved articles on user change
   useEffect(() => {
     if (user) {
       fetchSavedArticles(user.id);
+      fetchNotes(user.id);
     }
   }, [user]);
 
@@ -470,6 +680,7 @@ export default function App() {
     if (region === 'mideast') return 'Middle East';
     if (region === 'asia') return 'Asia Pacific';
     if (region === 'saved') return 'Starred & Read Later';
+    if (region === 'notepad') return 'Daily Notepad';
     return region;
   };
 
@@ -480,6 +691,7 @@ export default function App() {
     if (region === 'mideast') return <Newspaper size={18} />;
     if (region === 'asia') return <TrendingUp size={18} />;
     if (region === 'saved') return <Star size={18} />;
+    if (region === 'notepad') return <FileText size={18} />;
     return <Newspaper size={18} />;
   };
 
@@ -743,6 +955,15 @@ export default function App() {
             {getRegionIcon('saved')}
             <span>Saved Articles</span>
           </button>
+
+          <button 
+            className={`nav-item-btn ${activeRegion === 'notepad' ? 'active' : ''}`}
+            onClick={() => handleRegionSelect('notepad')}
+            style={getBtnStyle('notepad')}
+          >
+            {getRegionIcon('notepad')}
+            <span>Daily Notepad</span>
+          </button>
         </nav>
 
         {/* Schedule countdown tracker */}
@@ -759,9 +980,11 @@ export default function App() {
             <div className="header-title-area">
               <h1>{getRegionDisplayName(activeRegion)}</h1>
               <p>
-                {isLoading 
-                  ? 'Syncing with international market desks...' 
-                  : `${newsData[activeRegion]?.articles?.length || 0} active equity market articles compiled`
+                {activeRegion === 'notepad'
+                  ? 'Your quick-capture market journal and trade idea scratchpad'
+                  : (isLoading 
+                    ? 'Syncing with international market desks...' 
+                    : `${newsData[activeRegion]?.articles?.length || 0} active equity market articles compiled`)
                 }
               </p>
             </div>
@@ -810,6 +1033,15 @@ export default function App() {
                   Asia Pacific
                 </button>
               </div>
+
+              <button 
+                className="btn-clipboard-paste-header" 
+                onClick={() => handlePasteFromClipboard(getLocalDateString())}
+                title="Paste from Clipboard directly to today's notes"
+              >
+                <Clipboard size={14} />
+                <span className="btn-text">Paste Clipboard</span>
+              </button>
 
               <button 
                 className="btn-icon" 
@@ -902,7 +1134,7 @@ export default function App() {
           )}
 
           {/* Macro Dashboard Cards */}
-          {!isLoading && !error && (
+          {activeRegion !== 'notepad' && !isLoading && !error && (
             <div className="macro-dashboard-container">
               {checkpoint && (
                 <div className="checkpoint-card">
@@ -958,22 +1190,43 @@ export default function App() {
             </div>
           )}
 
-          {/* Feed Viewport */}
-          <Feed 
-            articles={activeRegion === 'saved' ? savedArticlesList : (newsData[activeRegion]?.articles || [])} 
-            isLoading={activeRegion === 'saved' ? false : isLoading} 
-            error={activeRegion === 'saved' ? null : error} 
-            onArticleClick={handleArticleClick}
-            regionName={getRegionDisplayName(activeRegion)}
-            starredArticles={starredArticles}
-            readLaterArticles={readLaterArticles}
-            toggleStar={toggleStar}
-            toggleReadLater={toggleReadLater}
-          />
+          {/* Feed Viewport or Notepad */}
+          {activeRegion === 'notepad' ? (
+            <Notepad
+              notes={notes}
+              activeDate={activeDate}
+              setActiveDate={setActiveDate}
+              onSaveManualNote={handleSaveManualNote}
+              onPasteFromClipboard={handlePasteFromClipboard}
+              onDeleteNote={handleDeleteNote}
+              onTogglePinNote={handleTogglePinNote}
+              onCopyNoteText={handleCopyNoteText}
+              showToast={showToast}
+            />
+          ) : (
+            <Feed 
+              articles={activeRegion === 'saved' ? savedArticlesList : (newsData[activeRegion]?.articles || [])} 
+              isLoading={activeRegion === 'saved' ? false : isLoading} 
+              error={activeRegion === 'saved' ? null : error} 
+              onArticleClick={handleArticleClick}
+              regionName={getRegionDisplayName(activeRegion)}
+              starredArticles={starredArticles}
+              readLaterArticles={readLaterArticles}
+              toggleStar={toggleStar}
+              toggleReadLater={toggleReadLater}
+            />
+          )}
         </div>
 
-        
       </main>
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className={`toast-notification ${toast.type}`}>
+          {toast.type === 'success' ? <Check size={16} /> : <AlertTriangle size={16} />}
+          <span>{toast.message}</span>
+        </div>
+      )}
 
       {/* Add spin animation locally for loader */}
       <style>{`

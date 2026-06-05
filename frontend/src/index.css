@@ -1397,4 +1397,583 @@ body {
   box-shadow: none;
 }
 
+/* ==========================================
+   Daily Notepad Feature Styling
+   ========================================== */
+
+.notepad-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 0 40px 40px 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.notepad-search-row {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.notepad-search-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+
+.notepad-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.notepad-search-input {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px 12px 8px 36px;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+}
+
+.notepad-search-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.notepad-date-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid var(--border-color);
+  padding: 12px 16px;
+  border-radius: 8px;
+}
+
+.navigation-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.date-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.calendar-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.date-picker-input {
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  padding: 6px 8px 6px 32px;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  width: 150px;
+}
+
+.date-picker-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.6);
+  cursor: pointer;
+}
+
+.theme-sepia .date-picker-input::-webkit-calendar-picker-indicator {
+  filter: invert(0.2);
+}
+
+.btn-nav {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-nav:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.theme-sepia .btn-nav:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-action-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-action-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--text-secondary);
+}
+
+.theme-sepia .btn-action-outline:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.notepad-export-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-action-icon-only {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-action-icon-only:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.btn-action-icon-only:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.notepad-date-display h2 {
+  font-size: 1.5rem;
+  font-family: var(--font-serif);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 8px 0 0 0;
+}
+
+.notepad-input-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.notepad-textarea {
+  width: 100%;
+  background: var(--bg-dark);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.notepad-textarea:focus {
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.notepad-form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-clipboard-paste {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-clipboard-paste:hover {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.45);
+}
+
+.theme-sepia .btn-clipboard-paste {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.2);
+  color: #7e22ce;
+}
+
+.theme-sepia .btn-clipboard-paste:hover {
+  background: rgba(168, 85, 247, 0.14);
+}
+
+.btn-save-note {
+  background: var(--accent-color);
+  color: var(--bg-dark);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.btn-save-note:hover:not(:disabled) {
+  background: var(--text-primary);
+  color: var(--bg-card);
+}
+
+.btn-save-note:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.notepad-notes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.notepad-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 8px;
+}
+
+.notepad-section-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.notepad-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  color: var(--text-muted);
+  gap: 12px;
+}
+
+.notepad-empty-state .empty-icon {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+.notepad-entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notepad-entry-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.notepad-entry-card:hover {
+  border-color: var(--text-muted);
+}
+
+.notepad-entry-card.pinned {
+  border-left: 4px solid var(--accent-color);
+  background: linear-gradient(90deg, var(--accent-glow) 0%, var(--bg-card) 100%);
+}
+
+.entry-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.entry-time {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  letter-spacing: 0.5px;
+}
+
+.pinned-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--accent-glow);
+  color: var(--accent-color);
+  font-size: 0.7rem;
+  font-weight: 600;
+  border: 1px solid var(--accent-border);
+}
+
+.entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-entry-action {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-entry-action:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.theme-sepia .btn-entry-action:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.btn-entry-action.active-pin {
+  color: var(--accent-color);
+}
+
+.btn-entry-action.hover-danger:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.entry-content {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* Search Results Matches styling */
+.search-match {
+  border-left: 2px solid var(--border-color);
+}
+
+.btn-link {
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+
+.btn-link:hover {
+  color: var(--text-primary);
+}
+
+.btn-link-action {
+  background: transparent;
+  border: none;
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.btn-link-action:hover {
+  background: var(--accent-glow);
+  border-color: var(--accent-border);
+}
+
+/* ==========================================
+   Toast Notification Styling
+   ========================================== */
+.toast-notification {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--accent-color);
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-primary);
+  z-index: 9999;
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: slideInUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toast-notification.success {
+  border-left-color: #10b981;
+}
+
+.toast-notification.error {
+  border-left-color: #ef4444;
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ==========================================
+   Global Header Clipboard Paste Button
+   ========================================== */
+.btn-clipboard-paste-header {
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #c084fc;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-clipboard-paste-header:hover {
+  background: rgba(168, 85, 247, 0.18);
+  border-color: rgba(168, 85, 247, 0.45);
+}
+
+.theme-sepia .btn-clipboard-paste-header {
+  background: rgba(168, 85, 247, 0.08);
+  border-color: rgba(168, 85, 247, 0.2);
+  color: #7e22ce;
+}
+
+.theme-sepia .btn-clipboard-paste-header:hover {
+  background: rgba(168, 85, 247, 0.14);
+}
+
+/* Responsive adjustment for header paste button */
+@media (max-width: 600px) {
+  .btn-clipboard-paste-header .btn-text {
+    display: none;
+  }
+  .btn-clipboard-paste-header {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .notepad-container {
+    padding: 16px;
+  }
+  
+  .notepad-date-navigation {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .navigation-buttons {
+    justify-content: space-between;
+  }
+  
+  .date-picker-input {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .action-buttons-group {
+    justify-content: space-between;
+  }
+}
+
 

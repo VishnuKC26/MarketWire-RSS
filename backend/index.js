@@ -862,23 +862,28 @@ function getUserDbPath(userId) {
   return path.join(dbDir, `${safeId}.json`);
 }
 
-// Helper to read user saved articles
-function readUserSaved(userId) {
+// Helper to read user database (saved articles & notes)
+function readUserDb(userId) {
   const filepath = getUserDbPath(userId);
   if (!fs.existsSync(filepath)) {
-    return { starred: {}, readLater: {} };
+    return { starred: {}, readLater: {}, notes: {} };
   }
   try {
     const raw = fs.readFileSync(filepath, 'utf8');
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return {
+      starred: parsed.starred || {},
+      readLater: parsed.readLater || {},
+      notes: parsed.notes || {}
+    };
   } catch (err) {
     console.error(`Failed to read db for user ${userId}:`, err.message);
-    return { starred: {}, readLater: {} };
+    return { starred: {}, readLater: {}, notes: {} };
   }
 }
 
-// Helper to write user saved articles
-function writeUserSaved(userId, data) {
+// Helper to write user database
+function writeUserDb(userId, data) {
   const filepath = getUserDbPath(userId);
   try {
     fs.writeFileSync(filepath, JSON.stringify(data, null, 2), 'utf8');
@@ -952,10 +957,13 @@ app.get('/api/saved', (req, res) => {
     return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
   }
   
-  const data = readUserSaved(userId);
+  const data = readUserDb(userId);
   res.json({
     success: true,
-    data
+    data: {
+      starred: data.starred,
+      readLater: data.readLater
+    }
   });
 });
 
@@ -968,16 +976,49 @@ app.post('/api/saved', (req, res) => {
     return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
   }
   
-  const updated = {
-    starred: starred || {},
-    readLater: readLater || {}
-  };
+  const data = readUserDb(userId);
+  data.starred = starred || {};
+  data.readLater = readLater || {};
   
-  const success = writeUserSaved(userId, updated);
+  const success = writeUserDb(userId, data);
   if (success) {
     res.json({ success: true, message: 'Saved successfully' });
   } else {
     res.status(500).json({ success: false, message: 'Failed to persist saved data' });
+  }
+});
+
+// Get user notes
+app.get('/api/notes', (req, res) => {
+  const userId = req.headers['x-user-id'];
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
+  }
+  
+  const data = readUserDb(userId);
+  res.json({
+    success: true,
+    notes: data.notes || {}
+  });
+});
+
+// Save/update user notes
+app.post('/api/notes', (req, res) => {
+  const userId = req.headers['x-user-id'];
+  const { notes } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ success: false, message: 'User ID header (X-User-Id) is required' });
+  }
+  
+  const data = readUserDb(userId);
+  data.notes = notes || {};
+  
+  const success = writeUserDb(userId, data);
+  if (success) {
+    res.json({ success: true, message: 'Notes saved successfully' });
+  } else {
+    res.status(500).json({ success: false, message: 'Failed to persist notes data' });
   }
 });
 

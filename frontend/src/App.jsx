@@ -129,8 +129,22 @@ export default function App() {
         }
       });
       const result = await res.json();
-      if (result.success && result.notes) {
-        setNotes(result.notes || {});
+      if (result.success) {
+        const backendNotes = result.notes || {};
+        const localStored = localStorage.getItem('market_pulse_notes');
+        const localNotes = localStored ? JSON.parse(localStored) : {};
+
+        const isBackendEmpty = Object.keys(backendNotes).length === 0;
+        const isLocalPopulated = Object.keys(localNotes).length > 0;
+
+        if (isBackendEmpty && isLocalPopulated) {
+          // Server data was likely wiped on Render restart, restore from localStorage
+          await syncNotes(userId, localNotes);
+          setNotes(localNotes);
+        } else {
+          setNotes(backendNotes);
+          localStorage.setItem('market_pulse_notes', JSON.stringify(backendNotes));
+        }
       }
     } catch (err) {
       console.error('Failed to fetch notes:', err);
@@ -167,8 +181,28 @@ export default function App() {
       });
       const result = await res.json();
       if (result.success && result.data) {
-        setStarredArticles(result.data.starred || {});
-        setReadLaterArticles(result.data.readLater || {});
+        const backendStarred = result.data.starred || {};
+        const backendReadLater = result.data.readLater || {};
+
+        const localStarredStr = localStorage.getItem('starredArticles');
+        const localReadLaterStr = localStorage.getItem('readLaterArticles');
+        const localStarred = localStarredStr ? JSON.parse(localStarredStr) : {};
+        const localReadLater = localReadLaterStr ? JSON.parse(localReadLaterStr) : {};
+
+        const isBackendEmpty = Object.keys(backendStarred).length === 0 && Object.keys(backendReadLater).length === 0;
+        const isLocalPopulated = Object.keys(localStarred).length > 0 || Object.keys(localReadLater).length > 0;
+
+        if (isBackendEmpty && isLocalPopulated) {
+          // Server database was likely wiped on Render restart, restore from localStorage
+          await syncSavedArticles(userId, localStarred, localReadLater);
+          setStarredArticles(localStarred);
+          setReadLaterArticles(localReadLater);
+        } else {
+          setStarredArticles(backendStarred);
+          setReadLaterArticles(backendReadLater);
+          localStorage.setItem('starredArticles', JSON.stringify(backendStarred));
+          localStorage.setItem('readLaterArticles', JSON.stringify(backendReadLater));
+        }
       }
     } catch (err) {
       console.error('Failed to fetch saved articles:', err);
@@ -233,9 +267,7 @@ export default function App() {
         [dateStr]: updatedDayNotes
       };
       
-      if (!user) {
-        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
-      }
+      localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
       return updatedNotes;
     });
 
@@ -272,9 +304,7 @@ export default function App() {
           [dateStr]: updatedDayNotes
         };
 
-        if (!user) {
-          localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
-        }
+        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
         return updatedNotes;
       });
 
@@ -299,9 +329,7 @@ export default function App() {
         [dateStr]: updatedDayNotes
       };
 
-      if (!user) {
-        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
-      }
+      localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
       return updatedNotes;
     });
 
@@ -324,9 +352,7 @@ export default function App() {
         [dateStr]: updatedDayNotes
       };
 
-      if (!user) {
-        localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
-      }
+      localStorage.setItem('market_pulse_notes', JSON.stringify(updatedNotes));
       return updatedNotes;
     });
 
@@ -468,9 +494,7 @@ export default function App() {
         updated[article.id] = article;
       }
       updatedStarred = updated;
-      if (!user) {
-        localStorage.setItem('starredArticles', JSON.stringify(updated));
-      }
+      localStorage.setItem('starredArticles', JSON.stringify(updated));
       return updated;
     });
 
@@ -489,9 +513,7 @@ export default function App() {
         updated[article.id] = article;
       }
       updatedReadLater = updated;
-      if (!user) {
-        localStorage.setItem('readLaterArticles', JSON.stringify(updated));
-      }
+      localStorage.setItem('readLaterArticles', JSON.stringify(updated));
       return updated;
     });
 

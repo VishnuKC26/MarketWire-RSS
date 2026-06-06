@@ -16,6 +16,7 @@
     "google-auth-library": "^10.6.2",
     "google-news-url-decoder": "^1.2.1",
     "jsdom": "^24.0.0",
+    "mongodb": "^7.2.0",
     "rss-parser": "^3.13.0"
   }
 }
